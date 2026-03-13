@@ -209,30 +209,18 @@ export class DocumentoControlador {
       return;
     }
 
-    const uploadDir = process.env.UPLOAD_DIR || path.resolve('./uploads');
+    const urlPublica = (documento as any).urlPublica;
 
-    const caminhoArquivo =
-      (documento as any).caminhoArquivo ||
-      (documento as any).arquivo ||
-      (documento as any).nomeArquivo;
-
-    if (!caminhoArquivo) {
-      res.status(400).json({ erro: 'Documento não possui arquivo associado' });
+    if (!urlPublica) {
+      res.status(400).json({ erro: 'Documento não possui URL pública' });
       return;
     }
 
-    const caminhoAbsoluto = path.join(uploadDir, caminhoArquivo);
-
-    const fs = require('fs');
-
-    if (!fs.existsSync(caminhoAbsoluto)) {
-      res.status(404).json({ erro: 'Arquivo não encontrado no servidor' });
-      return;
-    }
-
-    res.download(caminhoAbsoluto, documento.nomeArquivo || 'documento.pdf');
+    // Redireciona direto para o Cloudinary
+    res.redirect(urlPublica);
   } catch (erro: any) {
     console.error('Erro no download:', erro);
     res.status(500).json({ erro: erro.message });
-  }}
+  }
+}
 }
