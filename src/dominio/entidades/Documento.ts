@@ -12,7 +12,7 @@ export enum CategoriaDocumento {
   ESTATUTO = 'estatuto',
   CERTIDAO = 'certidao',
   CONVENIO = 'convenio',
-  OUTRO = 'outro',
+  OUTRO = 'Outros',
 }
 
 export enum StatusDocumento {
