@@ -198,39 +198,41 @@ export class DocumentoControlador {
   }
 
   async download(req: RequestAutenticado, res: Response): Promise<void> {
-    try {
-      const id: string = toStr(req.params.id);
+  try {
+    const id: string = toStr(req.params.id);
 
-      const documentoRepositorio = new DocumentoRepositorio();
-      const documento = await documentoRepositorio.buscarPorId(id);
+    const documentoRepositorio = new DocumentoRepositorio();
+    const documento = await documentoRepositorio.buscarPorId(id);
 
-      if (!documento) {
-        res.status(404).json({ erro: 'Documento não encontrado' });
-        return;
-      }
-
-      const caminhoRelativo =
-        (documento as any).caminhoArquivo ||
-        (documento as any).arquivo ||
-        (documento as any).nomeArquivo;
-
-      if (!caminhoRelativo) {
-        res.status(400).json({ erro: 'Documento não possui arquivo associado' });
-        return;
-      }
-
-      const uploadDir = process.env.UPLOAD_DIR || path.resolve('./uploads');
-      const caminhoAbsoluto = path.join(uploadDir, caminhoRelativo);
-      const nomeDownload = documento.titulo || 'documento';
-
-      res.download(caminhoAbsoluto, nomeDownload, (err) => {
-        if (err) {
-          console.error('Erro ao realizar download:', err);
-          res.status(500).json({ erro: 'Erro ao realizar download do arquivo' });
-        }
-      });
-    } catch (erro: any) {
-      res.status(500).json({ erro: erro.message });
+    if (!documento) {
+      res.status(404).json({ erro: 'Documento não encontrado' });
+      return;
     }
-  }
+
+    const uploadDir = process.env.UPLOAD_DIR || path.resolve('./uploads');
+
+    const caminhoArquivo =
+      (documento as any).caminhoArquivo ||
+      (documento as any).arquivo ||
+      (documento as any).nomeArquivo;
+
+    if (!caminhoArquivo) {
+      res.status(400).json({ erro: 'Documento não possui arquivo associado' });
+      return;
+    }
+
+    const caminhoAbsoluto = path.join(uploadDir, caminhoArquivo);
+
+    const fs = require('fs');
+
+    if (!fs.existsSync(caminhoAbsoluto)) {
+      res.status(404).json({ erro: 'Arquivo não encontrado no servidor' });
+      return;
+    }
+
+    res.download(caminhoAbsoluto, documento.nomeArquivo || 'documento.pdf');
+  } catch (erro: any) {
+    console.error('Erro no download:', erro);
+    res.status(500).json({ erro: erro.message });
+  }}
 }
