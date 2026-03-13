@@ -1,5 +1,4 @@
 // src/ui/controladores/DocumentoControlador.ts
-import path from 'path';
 import { Response } from 'express';
 import { RequestAutenticado } from '../middlewares/autenticacaoMiddleware';
 import { CriarDocumentoUseCase } from '@app/useCases/documentos/CriarDocumentoUseCase';
