@@ -50,11 +50,13 @@ export class ArmazenamentoServico implements IArmazenamentoServico {
     const isVideo = arquivo.mimetype.startsWith('video/');
     const resourceType: 'image' | 'video' | 'raw' = isImage ? 'image' : isVideo ? 'video' : 'raw';
 
-    const resultado = await cloudinary.uploader.upload(arquivo.path, {
+      const resultado = await cloudinary.uploader.upload(arquivo.path, {
       folder: process.env.CLOUDINARY_FOLDER || 'rotary',
       resource_type: resourceType,
       use_filename: true,
       unique_filename: true,
+      access_mode: 'public',      // ← adicione esta linha
+      type: 'upload',             // ← e esta linha
     });
 
     // Remove arquivo temporário após upload
